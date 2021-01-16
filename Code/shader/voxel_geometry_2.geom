@@ -45,7 +45,7 @@ layout(std430, binding = 6) buffer voxel_stiffness
   float stiffness_SSBO[];                                                       // Voxel stiffness SSBO.
 };
 
-layout(std430, binding = 6) buffer voxel_resting
+layout(std430, binding = 7) buffer voxel_resting
 {
   float resting_SSBO[];                                                         // Voxel resting SSBO.
 };

@@ -20,13 +20,13 @@ layout(std430, binding = 1) buffer voxel_center
 };
 
 // Voxel nearest neighbours:
-layout(std430, binding = 11) buffer voxel_nearest
+layout(std430, binding = 10) buffer voxel_nearest
 {
   int nearest_SSBO[];                                                           // Voxel nearest SSBO.
 };
 
 // Voxel offsets:
-layout(std430, binding = 12) buffer voxel_offset
+layout(std430, binding = 11) buffer voxel_offset
 {
   int offset_SSBO[];                                                            // Voxel offset SSBO.
 };
