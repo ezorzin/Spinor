@@ -158,6 +158,9 @@ int main ()
     freedom->data[i] = 0;                                                                            // Resetting freedom flag...
   }
 
+  std::cout << "nodes = " << nodes << std::endl;
+  std::cout << "frame nodes = " << frame_nodes << std::endl;
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////// OPENCL KERNELS INITIALIZATION /////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +199,9 @@ int main ()
     gl->poll_events ();                                                                              // Polling gl events...
     gl->mouse_navigation (ms_orbit_rate, ms_pan_rate, ms_decaytime);
     gl->gamepad_navigation (gmp_orbit_rate, gmp_pan_rate, gmp_decaytime, gmp_deadzone);
+    std::cout << "pippo" << std::endl;
     gl->plot (S);                                                                                    // Plotting shared arguments...
+    std::cout << "pippo" << std::endl;
     gl->refresh ();                                                                                  // Refreshing gl...
 
     if(gl->button_CROSS)
