@@ -26,17 +26,17 @@
 #endif
 
 #ifdef WIN32
-  #define SHADER_HOME "..\\..\\Spinor\\Code\\shader\\"                                               // Windows OpenGL shaders directory.
-  #define KERNEL_HOME "..\\..\\Spinor\\Code\\kernel\\"                                               // Windows OpenCL kernels directory.
-  #define GMSH_HOME   "..\\..\\Spinor\\Code\\mesh\\"                                                 // Linux GMSH mesh directory.
+  #define SHADER_HOME "..\\..\\..\\Spinor\\Code\\shader\\"                                           // Windows OpenGL shaders directory.
+  #define KERNEL_HOME "..\\..\\..\\Spinor\\Code\\kernel\\"                                           // Windows OpenCL kernels directory.
+  #define GMSH_HOME   "..\\..\\..\\Spinor\\Code\\mesh\\"                                             // Linux GMSH mesh directory.
 #endif
 
 #define SHADER_VERT   "voxel_vertex.vert"                                                            // OpenGL vertex shader.
 #define SHADER_GEOM_1 "voxel_geometry_1.geom"                                                        // OpenGL geometry shader.
 #define SHADER_GEOM_2 "voxel_geometry_2.geom"                                                        // OpenGL geometry shader.
 #define SHADER_FRAG   "voxel_fragment.frag"                                                          // OpenGL fragment shader.
-#define KERNEL_1      "thekernel_1.cl"                                                               // OpenCL kernel source.
-#define KERNEL_2      "thekernel_2.cl"                                                               // OpenCL kernel source.
+#define KERNEL_1      "spinor_kernel_1.cl"                                                           // OpenCL kernel source.
+#define KERNEL_2      "spinor_kernel_2.cl"                                                           // OpenCL kernel source.
 #define GMSH_MESH     "spinor.msh"                                                                   // GMSH mesh.
 
 // INCLUDES:
@@ -72,37 +72,28 @@ int main ()
   nu_float4*          acceleration   = new nu_float4 (3);                                            // Acceleration [m/s^2].
   nu_float4*          position_int   = new nu_float4 (4);                                            // Position (intermediate) [m].
   nu_float4*          velocity_int   = new nu_float4 (5);                                            // Velocity (intermediate) [m/s].
-  nu_float*           stiffness      = new nu_float (7);                                             // Stiffness.
-  nu_float*           resting        = new nu_float (8);                                             // Resting.
-  nu_float*           friction       = new nu_float (9);                                             // Friction.
-  nu_float*           mass           = new nu_float (10);                                            // Mass [kg].
-  nu_int*             neighbour      = new nu_int (11);                                              // Neighbour.
-  nu_int*             offset         = new nu_int (12);                                              // Offset.
-  nu_int*             freedom        = new nu_int (13);                                              // Freedom.
-  nu_float*           dt             = new nu_float (14);                                            // Time step [s].
+  nu_float*           stiffness      = new nu_float (6);                                             // Stiffness.
+  nu_float*           resting        = new nu_float (7);                                             // Resting.
+  nu_float*           friction       = new nu_float (8);                                             // Friction.
+  nu_float*           mass           = new nu_float (9);                                             // Mass [kg].
+  nu_int*             neighbour      = new nu_int (10);                                              // Neighbour.
+  nu_int*             offset         = new nu_int (11);                                              // Offset.
+  nu_int*             freedom        = new nu_int (12);                                              // Freedom.
+  nu_float*           dt             = new nu_float (13);                                            // Time step [s].
 
   // MESH:
   mesh*               spinor         = new mesh (std::string (GMSH_HOME) + std::string (GMSH_MESH)); // Mesh cloth.
   size_t              nodes;                                                                         // Number of nodes.
   size_t              elements;                                                                      // Number of elements.
   size_t              neighbours;                                                                    // Number of neighbours.
-  std::vector<size_t> side_x;                                                                        // Nodes on "x" side.
-  std::vector<size_t> side_y;                                                                        // Nodes on "y" side.
-  std::vector<size_t> side_z;                                                                        // Nodes on "z" side.
   std::vector<size_t> frame;                                                                         // Nodes on frame.
-  size_t              side_x_nodes;                                                                  // Number of nodes in "x" direction [#].
-  size_t              side_y_nodes;                                                                  // Number of nodes in "y" direction [#].
-  size_t              side_z_nodes;                                                                  // Number of nodes in "z" direction [#].
   size_t              frame_nodes;                                                                   // Number of frame nodes.
-  float               x_min = -1.0f;                                                                 // "x_min" spatial boundary [m].
-  float               x_max = +1.0f;                                                                 // "x_max" spatial boundary [m].
-  float               y_min = -1.0f;                                                                 // "y_min" spatial boundary [m].
-  float               y_max = +1.0f;                                                                 // "y_max" spatial boundary [m].
-  float               z_min = -1.0f;                                                                 // "z_min" spatial boundary [m].
-  float               z_max = +1.0f;                                                                 // "z_max" spatial boundary [m].
-  float               dx;                                                                            // x-axis mesh spatial size [m].
-  float               dy;                                                                            // y-axis mesh spatial size [m].
-  float               dz;                                                                            // z-axis mesh spatial size [m].
+  float               x_min          = -1.0f;                                                        // "x_min" spatial boundary [m].
+  float               x_max          = +1.0f;                                                        // "x_max" spatial boundary [m].
+  float               y_min          = -1.0f;                                                        // "y_min" spatial boundary [m].
+  float               y_max          = +1.0f;                                                        // "y_max" spatial boundary [m].
+  float               z_min          = -1.0f;                                                        // "z_min" spatial boundary [m].
+  float               z_max          = +1.0f;                                                        // "z_max" spatial boundary [m].
   float               pos_x;                                                                         // Position "x" component...
   float               pos_y;                                                                         // Position "y" component...
   float               pos_z;                                                                         // Position "z" component...
@@ -111,9 +102,9 @@ int main ()
   float               link_z;                                                                        // Link "z" component...
 
   // SIMULATION VARIABLES:
-  float               m = 0.001;                                                                     // Node mass [kg].
-  float               K = 100;                                                                       // Link elastic constant [kg/s^2].
-  float               B = 1;                                                                         // Damping [kg*s*m].
+  float               m              = 0.001f;                                                       // Node mass [kg].
+  float               K              = 100.0f;                                                       // Link elastic constant [kg/s^2].
+  float               B              = 1.0f;                                                         // Damping [kg*s*m].
   float               dt_critical;                                                                   // Critical time step [s].
   float               dt_simulation;                                                                 // Simulation time step [s].
 
@@ -124,17 +115,8 @@ int main ()
   nodes         = spinor->node.size ();                                                              // Getting number of nodes...
   neighbours    = spinor->neighbourhood.size ();                                                     // Getting number of neighbours nodes...
   elements      = spinor->element.size ();                                                           // Getting number of elements...
-  frame         = spinor->physical (1, 1);                                                           // Getting nodes on frame...
-  side_x        = spinor->physical (1, 2);                                                           // Getting nodes on side_x...
-  side_y        = spinor->physical (1, 3);                                                           // Getting nodes on side_y...
-  side_z        = spinor->physical (1, 4);                                                           // Getting nodes on side_z...
+  frame         = spinor->physical (2, 7);                                                           // Getting nodes on frame...
   frame_nodes   = frame.size ();                                                                     // Getting number of nodes on frame...
-  side_x_nodes  = side_x.size ();                                                                    // Getting number of nodes on side_x...
-  side_y_nodes  = side_y.size ();                                                                    // Getting number of nodes on side_y...
-  side_z_nodes  = side_z.size ();                                                                    // Getting number of nodes on side_z...
-  dx            = (x_max - x_min)/(side_x_nodes - 1);                                                // x-axis mesh spatial size [m].
-  dy            = (y_max - y_min)/(side_y_nodes - 1);                                                // y-axis mesh spatial size [m].
-  dz            = (z_max - z_min)/(side_z_nodes - 1);                                                // y-axis mesh spatial size [m].
   dt_critical   = sqrt (m/K);                                                                        // Critical time step [s].
   dt_simulation = 0.5f*dt_critical;                                                                  // Simulation time step [s].
 
@@ -170,7 +152,7 @@ int main ()
     stiffness->data.push_back (K);                                                                   // Setting stiffness...
   }
 
-  // SETTING NEUTRINO ARRAYS ("border" depending):
+  // SETTING NEUTRINO ARRAYS ("frame" depending):
   for(int i = 0; i < frame_nodes; i++)
   {
     freedom->data[i] = 0;                                                                            // Resetting freedom flag...
