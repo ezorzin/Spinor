@@ -39,7 +39,7 @@ out vec4 fragment_color;                                                        
 
 void main(void)
 {
-  uint i = gl_PrimitiveID;                                                      // Central node index.
+  uint i = gl_PrimitiveID;                                                      // Primitive index.
   uint j = 0;                                                                   // Offset index.                 
   uint j_min = 0;                                                               // Neighbour node minimum index.
   uint j_max = offset_SSBO[i];                                                  // Neighbour node maximum index.
@@ -89,7 +89,7 @@ void main(void)
     k = nearest_SSBO[j];                                                        // Computing neighbour index...
   }
 
-  //fragment_color = vec4(color.rgb, k1);
-  fragment_color = vec4(0.4*vec3(k2, 1.1*k3, k1) + color.rgb, 0.0 + k1);        // Setting fragment color...
+  fragment_color = vec4(color.rgb, k1*color.a);
+  //fragment_color = vec4(0.4*vec3(k2, 1.1*k3, k1) + color.rgb, 0.0 + k1);        // Setting fragment color...
   //fragment_color = color;
 }
