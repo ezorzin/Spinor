@@ -94,7 +94,7 @@ int main ()
   float               y_max          = +1.0f;                                                        // "y_max" spatial boundary [m].
   float               z_min          = -1.0f;                                                        // "z_min" spatial boundary [m].
   float               z_max          = +1.0f;                                                        // "z_max" spatial boundary [m].
-  float               ds             = 0.22f;                                                        // Cell size [m].
+  float               ds             = 0.5f;                                                         // Cell size [m].
   float               pos_x;                                                                         // Position "x" component...
   float               pos_y;                                                                         // Position "y" component...
   float               pos_z;                                                                         // Position "z" component...
@@ -142,6 +142,8 @@ int main ()
     offset->data.push_back (spinor->offset[i]);
   }
 
+  std::cout << "neighbours = " << neighbours << std::endl;
+
   // SETTING NEUTRINO ARRAYS ("neighbours" depending):
   for(i = 0; i < neighbours; i++)
   {
@@ -152,9 +154,9 @@ int main ()
     link_length = sqrt (pow (link_x, 2) + pow (link_y, 2) + pow (link_z, 2));
     resting->data.push_back (link_length);                                                           // Computing resting distace...
 
-    if(link_length > ds)
+    if(link_length > 0.51)
     {
-      color->data.push_back ({0.0f, 0.0f, 0.0f, 0.0f});                                              // Setting color...
+      color->data.push_back ({1.0f, 0.0f, 0.0f, 0.0f});                                              // Setting color...
     }
     else
     {
@@ -170,7 +172,7 @@ int main ()
     freedom->data[i] = 0;                                                                            // Resetting freedom flag...
   }
 
-  std::cout << "nodes = " << std::endl;
+  std::cout << "nodes = " << nodes << std::endl;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////// OPENCL KERNELS INITIALIZATION /////////////////////////////////
