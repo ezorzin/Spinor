@@ -88,7 +88,8 @@ out float AR_quad;                                                              
 
 void main()
 {
-  uint i = gl_PrimitiveIDIn;                                                    // Central node index.        
+  uint i = gl_PrimitiveIDIn;                                                    // Central node index.
+  //uint i = gl_InvocationID;        
   uint j = 0;                                                                   // Offset index.
   uint j_min = 0;                                                               // Neighbour node minimum index.
   uint j_max = offset_SSBO[i];                                                  // Neighbour node maximum index.

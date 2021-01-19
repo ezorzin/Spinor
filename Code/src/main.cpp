@@ -88,13 +88,13 @@ int main ()
   size_t              neighbours;                                                                    // Number of neighbours.
   std::vector<size_t> frame;                                                                         // Nodes on frame.
   size_t              frame_nodes;                                                                   // Number of frame nodes.
-  float               x_min          = -1.0f;                                                        // "x_min" spatial boundary [m].
-  float               x_max          = +1.0f;                                                        // "x_max" spatial boundary [m].
-  float               y_min          = -1.0f;                                                        // "y_min" spatial boundary [m].
-  float               y_max          = +1.0f;                                                        // "y_max" spatial boundary [m].
-  float               z_min          = -1.0f;                                                        // "z_min" spatial boundary [m].
-  float               z_max          = +1.0f;                                                        // "z_max" spatial boundary [m].
-  float               ds             = 0.5f;                                                         // Cell size [m].
+  float               x_min          = -0.9f;                                                        // "x_min" spatial boundary [m].
+  float               x_max          = +0.9f;                                                        // "x_max" spatial boundary [m].
+  float               y_min          = -0.9f;                                                        // "y_min" spatial boundary [m].
+  float               y_max          = +0.9f;                                                        // "y_max" spatial boundary [m].
+  float               z_min          = -0.9f;                                                        // "z_min" spatial boundary [m].
+  float               z_max          = +0.9f;                                                        // "z_max" spatial boundary [m].
+  float               ds             = 0.9f;                                                         // Cell size [m].
   float               pos_x;                                                                         // Position "x" component...
   float               pos_y;                                                                         // Position "y" component...
   float               pos_z;                                                                         // Position "z" component...
@@ -144,6 +144,8 @@ int main ()
 
   std::cout << "neighbours = " << neighbours << std::endl;
 
+  int n = 0;
+
   // SETTING NEUTRINO ARRAYS ("neighbours" depending):
   for(i = 0; i < neighbours; i++)
   {
@@ -154,13 +156,14 @@ int main ()
     link_length = sqrt (pow (link_x, 2) + pow (link_y, 2) + pow (link_z, 2));
     resting->data.push_back (link_length);                                                           // Computing resting distace...
 
-    if(link_length > 0.51)
+    if(link_length > 1.0)
     {
       color->data.push_back ({1.0f, 0.0f, 0.0f, 0.0f});                                              // Setting color...
     }
     else
     {
       color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
+      n++;
     }
 
     stiffness->data.push_back (K);                                                                   // Setting stiffness...
@@ -172,6 +175,7 @@ int main ()
     freedom->data[i] = 0;                                                                            // Resetting freedom flag...
   }
 
+  std::cout << "n = " << n << std::endl;
   std::cout << "nodes = " << nodes << std::endl;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +195,10 @@ int main ()
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_GEOM_2), NU_GEOMETRY);               // Setting shader source file...
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_FRAG), NU_FRAGMENT);                 // Setting shader source file...
   S->build (nodes);                                                                                  // Building shader program...
+
+  S->size = 33;
+  std::cout << "S size = " << S->size << std::endl;
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// SETTING OPENCL KERNEL ARGUMENTS /////////////////////////////////
@@ -213,6 +221,7 @@ int main ()
     gl->mouse_navigation (ms_orbit_rate, ms_pan_rate, ms_decaytime);
     gl->gamepad_navigation (gmp_orbit_rate, gmp_pan_rate, gmp_decaytime, gmp_deadzone);
     gl->plot (S);                                                                                    // Plotting shared arguments...
+
     gl->refresh ();                                                                                  // Refreshing gl...
 
     if(gl->button_CROSS)
