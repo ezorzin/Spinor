@@ -12,7 +12,7 @@ __kernel void thekernel(__global float4*    color,                              
                         __global float*     stiffness,                          // Stiffness.
                         __global float*     resting,                            // Resting distance.
                         __global float*     friction,                           // Friction.
-                        __global float*     mass,                               // Mass.
+                        __global float*     central,                            // Central.
                         __global int*       nearest,                            // Neighbour.
                         __global int*       offset,                             // Offset.
                         __global int*       freedom,                            // Freedom flag.

@@ -46,6 +46,9 @@ int main ()
 {
   // INDEXES:
   size_t              i;                                                                             // Index [#].
+  size_t              j;                                                                             // Index [#].
+  size_t              j_min;                                                                         // Index [#].
+  size_t              j_max;                                                                         // Index [#].
 
   // MOUSE PARAMETERS:
   float               ms_orbit_rate  = 1.0f;                                                         // Orbit rotation rate [rev/s].
@@ -85,6 +88,7 @@ int main ()
   mesh*               spinor         = new mesh (std::string (GMSH_HOME) + std::string (GMSH_MESH)); // Mesh cloth.
   size_t              nodes;                                                                         // Number of nodes.
   size_t              elements;                                                                      // Number of elements.
+  size_t              groups;                                                                        // Number of groups.
   size_t              neighbours;                                                                    // Number of neighbours.
   std::vector<size_t> frame;                                                                         // Nodes on frame.
   size_t              frame_nodes;                                                                   // Number of frame nodes.
@@ -114,7 +118,7 @@ int main ()
   ///////////////////////////////////////// DATA INITIALIZATION ///////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////
   // MESH:
-  spinor->process (2, 2, NU_MSH_QUA_4);                                                              // Processing mesh...
+  spinor->process (1, 3, NU_MSH_HEX_8);                                                              // Processing mesh...
 
   position->data  = spinor->node_coordinates;                                                        // Setting all node coordinates...
   central->data   = spinor->node;                                                                    // Setting central node indices...
@@ -127,6 +131,14 @@ int main ()
   groups          = spinor->group.size ();                                                           // Getting the number of groups...
   neighbours      = spinor->neighbour.size ();                                                       // Getting the number of neighbours...
 
+  std::cout << "nodes = " << nodes << std::endl;
+  std::cout << "elements = " << elements << std::endl;
+  std::cout << "groups = " << groups << std::endl;
+  std::cout << "neighbours = " << neighbours << std::endl;
+  std::cout << "offsets = " << spinor->neighbour_offset.size () << std::endl;
+  std::cout << "lenghts = " << spinor->neighbour_length.size () << std::endl;
+  std::cout << "links = " << spinor->neighbour_link.size () << std::endl;
+
   dt_critical     = sqrt (m/K);                                                                      // Critical time step [s].
   dt_simulation   = 0.5f*dt_critical;                                                                // Simulation time step [s].
 
@@ -137,50 +149,57 @@ int main ()
   // SETTING NEUTRINO ARRAYS ("nodes" depending):
   for(i = 0; i < nodes; i++)
   {
-    pos_x = spinor->node[i].x;                                                                       // Getting cloth node "x" position...
-    pos_y = spinor->node[i].y;                                                                       // Getting cloth node "y" position...
-    pos_z = spinor->node[i].z;                                                                       // Getting cloth node "z" position...
-    //std::cout << "x =" << pos_x << " y = " << pos_y << " z = " << pos_z << std::endl;
-    position->data.push_back ({pos_x, pos_y, pos_z, 1.0f});                                          // Setting position...
     position_int->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                         // Setting intermediate position...
     velocity->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                             // Setting velocity...
     velocity_int->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                         // Setting intermediate velocity...
     acceleration->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                         // Setting acceleration...
-    mass->data.push_back (m);                                                                        // Setting mass...
     freedom->data.push_back (1);                                                                     // Setting freedom flag...
-    offset->data.push_back (spinor->offset[i]);
-  }
 
-  int n = 0;
+    std::cout << "i = " << i << " offset = " << offset->data[i] <<
+      " central = " << central->data[i] <<
+      " x = " << position->data[central->data[i]].x <<
+      " y = " << position->data[central->data[i]].y <<
+      " z = " << position->data[central->data[i]].z <<
+      " nodes: ";
 
-  // SETTING NEUTRINO ARRAYS ("neighbours" depending):
-  for(i = 0; i < neighbours; i++)
-  {
-    neighbour->data.push_back (spinor->neighbourhood[i]);
-    link_x      = spinor->link[i].x;
-    link_y      = spinor->link[i].y;
-    link_z      = spinor->link[i].z;
-
-    link_length = sqrt (pow (link_x, 2) + pow (link_y, 2) + pow (link_z, 2));
-    //std::cout << "link length = " << link_length << std::endl;
-    resting->data.push_back (link_length);                                                           // Computing resting distace...
-
-    if(link_length > 0.55)
+    // Computing minimum element offset index:
+    if(i == 0)
     {
-      color->data.push_back ({1.0f, 0.0f, 0.0f, 1.0f});                                              // Setting color...
+      j_min = 0;                                                                                     // Setting minimum element offset index...
     }
     else
     {
-      color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
+      j_min = offset->data[i - 1];                                                                   // Setting minimum element offset index...
     }
 
+    j_max = offset->data[i];                                                                         // Setting maximum element offset index...
+
+    for(j = j_min; j < j_max; j++)
+    {
+      std::cout << neighbour->data[j] << " ";
+    }
+
+    std::cout << std::endl;
+
     stiffness->data.push_back (K);                                                                   // Setting stiffness...
+
+    /*
+       if(i == 111)
+       {
+       color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
+       }
+       else
+       {
+       color->data.push_back ({0.0f, 0.0f, 0.0f, 0.0f});                                              // Setting color...
+       }
+     */
   }
 
-  // SETTING NEUTRINO ARRAYS ("frame" depending):
-  for(int i = 0; i < frame_nodes; i++)
+  for(j = 0; j < neighbours; j++)
   {
-    freedom->data[frame[i]] = 0;                                                                     // Resetting freedom flag...
+
+    color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                                // Setting color...
+
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,11 +218,7 @@ int main ()
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_GEOM_1), NU_GEOMETRY);               // Setting shader source file...
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_GEOM_2), NU_GEOMETRY);               // Setting shader source file...
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_FRAG), NU_FRAGMENT);                 // Setting shader source file...
-  S->build (184);                                                                                    // Building shader program...
-
-
-  std::cout << "S size = " << S->size << std::endl;
-
+  S->build (nodes);                                                                                  // Building shader program...
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// SETTING OPENCL KERNEL ARGUMENTS /////////////////////////////////
@@ -218,7 +233,7 @@ int main ()
     cl->get_tic ();                                                                                  // Getting "tic" [us]...
     cl->acquire ();
     cl->execute (K1, NU_WAIT);                                                                       // Executing OpenCL kernel...
-    cl->execute (K2, NU_WAIT);                                                                       // Executing OpenCL kernel...
+    //cl->execute (K2, NU_WAIT);                                                                       // Executing OpenCL kernel...
     cl->release ();
 
     gl->clear ();                                                                                    // Clearing gl...
@@ -250,7 +265,6 @@ int main ()
   delete stiffness;                                                                                  // Deleting stiffness data...
   delete resting;                                                                                    // Deleting resting data...
   delete friction;                                                                                   // Deleting friction data...
-  delete mass;                                                                                       // Deleting mass data...
   delete neighbour;                                                                                  // Deleting neighbours...
   delete offset;                                                                                     // Deleting offset...
   delete freedom;                                                                                    // Deleting freedom flag data...

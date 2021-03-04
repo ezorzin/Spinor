@@ -8,7 +8,7 @@ uniform float size_y;                                                           
 uniform float AR;                                                               // Framebuffer aspect ratio.
 
 layout (points) in;                                                             // Input points.
-layout (triangle_strip, max_vertices = 64) out;                                 // Output points.
+layout (triangle_strip, max_vertices = 80) out;                                 // Output points.
 
 layout(std430, binding = 0) buffer voxel_color
 {
@@ -55,9 +55,9 @@ layout(std430, binding = 8) buffer voxel_friction
   float friction_SSBO[];                                                        // Voxel friction SSBO.
 };
 
-layout(std430, binding = 9) buffer voxel_mass
+layout(std430, binding = 9) buffer voxel_central
 {
-  float mass_SSBO[];                                                            // Voxel mass SSBO.
+  int central_SSBO[];                                                           // Voxel central SSBO.
 };
 
 layout(std430, binding = 10) buffer voxel_nearest
