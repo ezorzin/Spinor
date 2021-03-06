@@ -187,23 +187,14 @@ int main ()
 
     stiffness->data.push_back (K);                                                                   // Setting stiffness...
 
-    /*
-       if(i == 111)
-       {
-       color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
-       }
-       else
-       {
-       color->data.push_back ({0.0f, 0.0f, 0.0f, 0.0f});                                              // Setting color...
-       }
-     */
-  }
-
-  for(j = 0; j < neighbours; j++)
-  {
-
-    color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                                // Setting color...
-
+    if(resting->data[j] > 0.2)
+    {
+      color->data.push_back ({1.0f, 0.0f, 0.0f, 1.0f});                                              // Setting color...
+    }
+    else
+    {
+      color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +213,7 @@ int main ()
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_GEOM_1), NU_GEOMETRY);               // Setting shader source file...
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_GEOM_2), NU_GEOMETRY);               // Setting shader source file...
   S->addsource (std::string (SHADER_HOME) + std::string (SHADER_FRAG), NU_FRAGMENT);                 // Setting shader source file...
-  S->build (nodes);                                                                                  // Building shader program...
+  S->build (neighbours);                                                                             // Building shader program...
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// SETTING OPENCL KERNEL ARGUMENTS /////////////////////////////////
