@@ -88,8 +88,7 @@ out float AR_quad;                                                              
 
 void main()
 {
-  uint i = gl_PrimitiveIDIn;                                                    // Central node index.
-  //uint i = gl_InvocationID;        
+  uint i = gl_PrimitiveIDIn;                                                    // Central node index.        
   uint j = 0;                                                                   // Offset index.
   uint j_min = 0;                                                               // Neighbour node minimum index.
   uint j_max = offset_SSBO[i];                                                  // Neighbour node maximum index.
@@ -132,10 +131,11 @@ void main()
   }
 
   // BUILDING LINE FROM CENTER TO NEIGHBOUR:
-  for (j = j_min; j < j_max; j++)
-  {
-    k = nearest_SSBO[j];                                                        // Computing neighbour index...
-    L = resting_SSBO[j];                                                        // Getting link resting distance...
+  if(i == )
+
+
+    k = nearest_SSBO[i];                                                        // Computing neighbour index...
+    L = resting_SSBO[i];                                                        // Getting link resting distance...
 
     // COMPUTING BILLBOARD ROTATION:
     P = P_mat*V_mat*position_SSBO[n];                                           // Getting center node (in clip space)...
@@ -189,5 +189,4 @@ void main()
 
       EndPrimitive();                                                             // Ending primitive...
     }
-  }
 }
