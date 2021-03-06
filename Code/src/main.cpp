@@ -138,11 +138,8 @@ int main ()
   std::cout << "lenghts = " << spinor->neighbour_length.size () << std::endl;
   std::cout << "links = " << spinor->neighbour_link.size () << std::endl;
 
-  // Building central node vector:
-
-
-  dt_critical   = sqrt (m/K);                                                                        // Critical time step [s].
-  dt_simulation = 0.5f*dt_critical;                                                                  // Simulation time step [s].
+  dt_critical     = sqrt (m/K);                                                                      // Critical time step [s].
+  dt_simulation   = 0.5f*dt_critical;                                                                // Simulation time step [s].
 
   // SETTING NEUTRINO ARRAYS (parameters):
   friction->data.push_back (B);                                                                      // Setting friction...
@@ -156,13 +153,6 @@ int main ()
     velocity_int->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                         // Setting intermediate velocity...
     acceleration->data.push_back ({0.0f, 0.0f, 0.0f, 1.0f});                                         // Setting acceleration...
     freedom->data.push_back (1);                                                                     // Setting freedom flag...
-
-    std::cout << "i = " << i << " offset = " << offset->data[i] <<
-      " central = " << central->data[i] <<
-      " x = " << position->data[central->data[i]].x <<
-      " y = " << position->data[central->data[i]].y <<
-      " z = " << position->data[central->data[i]].z <<
-      " nodes: ";
 
     // Computing minimum element offset index:
     if(i == 0)
@@ -178,23 +168,19 @@ int main ()
 
     for(j = j_min; j < j_max; j++)
     {
-      std::cout << neighbour->data[j] << " ";
-
       central->data.push_back (spinor->node[i]);                                                     // Building central node vector...
-    }
 
-    std::cout << std::endl;
+      if(resting->data[j] > 0.21)
+      {
+        color->data.push_back ({1.0f, 0.0f, 0.0f, 0.5f});                                            // Setting color...
+      }
+      else
+      {
+        color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                            // Setting color...
+      }
+    }
 
     stiffness->data.push_back (K);                                                                   // Setting stiffness...
-
-    if(resting->data[j] > 0.2)
-    {
-      color->data.push_back ({1.0f, 0.0f, 0.0f, 1.0f});                                              // Setting color...
-    }
-    else
-    {
-      color->data.push_back ({0.0f, 1.0f, 0.0f, 1.0f});                                              // Setting color...
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
